@@ -1,0 +1,36 @@
+.meal-entry-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.main-meal-input {
+    width: 600px;
+    height: 40px;
+    border-radius: 10px;
+    border: none;
+    padding-left: 20px;
+}
+.main-meal-input::placeholder {
+    font-size: 16px;
+    color: #888;
+}
+
+
+.meal-entry-form button {
+    align-self: center;
+    height: 40px;
+    width: 300px;
+
+    border-radius: 10px;
+    border: none;
+    font-size: 16px;
+
+}

@@ -1,0 +1,65 @@
+.date-picker {
+    height: 40px;
+    border: 1px solid #ccc;
+    padding: 8px;
+    font-size: 16px;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.meal-entries-list {
+    flex: 0 0 300px;
+    width: 300px;
+    padding: 20px;
+    border-right: 1px solid #ccc;
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    color:black;
+    background-color: #f5f5f5; /* Background color for the drawer */
+}
+
+.meal-entries-list form {
+    margin-bottom: 20px;
+}
+
+.meal-entries {
+    margin-top: 20px;
+    margin-bottom: 50px;
+
+}
+
+.meal-entry {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc; /* Optional: Add a border around each meal entry */
+    border-radius: 5px; /* Optional: Add rounded corners */
+}
+
+.food-list {
+    padding: 10px;
+    background-color: #d0d0d0;
+}
+
+.food-item {
+    margin-bottom: 5px;
+}
+
+.totals {
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #e0e0e0;
+    border-radius: 5px;
+}
+
+.totals h3 {
+    margin: 0 0 10px 0;
+}
+
+.totals p {
+    margin: 5px 0;
+}
