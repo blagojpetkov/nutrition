@@ -4,21 +4,47 @@ import './MealEntriesList.css';
 import DatePicker from "react-datepicker";
 
 const MealEntriesList = ({ date, mealEntries, handleFetchMeals, setDate }) => {
-
-    const calculateTotals = () => {
+    const calculateMealEntryTotals = (foods) => {
         let totalCalories = 0;
         let totalProtein = 0;
         let totalFats = 0;
         let totalCarbs = 0;
 
-        mealEntries.forEach(meal => {
-            totalCalories += meal.calories;
-            totalProtein += meal.protein;
-            totalFats += meal.fats;
-            totalCarbs += meal.carbohydrates;
+        foods.forEach(food => {
+            totalCalories += food.nf_calories;
+            totalProtein += food.nf_protein;
+            totalFats += food.nf_total_fat;
+            totalCarbs += food.nf_total_carbohydrate;
         });
 
-        return { totalCalories, totalProtein, totalFats, totalCarbs };
+        return {
+            totalCalories: Math.round(totalCalories),
+            totalProtein: Math.round(totalProtein),
+            totalFats: Math.round(totalFats),
+            totalCarbs: Math.round(totalCarbs)
+        };;
+    };
+
+    const calculateTotals = (entries) => {
+        let totalCalories = 0;
+        let totalProtein = 0;
+        let totalFats = 0;
+        let totalCarbs = 0;
+
+        entries.forEach(meal => {
+            const { totalCalories: mealCalories, totalProtein: mealProtein, totalFats: mealFats, totalCarbs: mealCarbs } = calculateMealEntryTotals(meal.foods);
+            totalCalories += mealCalories;
+            totalProtein += mealProtein;
+            totalFats += mealFats;
+            totalCarbs += mealCarbs;
+        });
+
+        return {
+            totalCalories: Math.round(totalCalories),
+            totalProtein: Math.round(totalProtein),
+            totalFats: Math.round(totalFats),
+            totalCarbs: Math.round(totalCarbs)
+        };
     };
 
     const formatDisplayDate = (dateString) => {
@@ -33,7 +59,16 @@ const MealEntriesList = ({ date, mealEntries, handleFetchMeals, setDate }) => {
         setDate(date.toISOString().split('T')[0]);
     };
 
-    const totals = calculateTotals();
+    const handleDeleteFood = async (mealId, foodId) => {
+        try {
+            await axios.delete(`/api/meals/${mealId}/foods/${foodId}`);
+            handleFetchMeals(); // Refresh the list after deleting a food item
+        } catch (error) {
+            console.error('There was an error deleting the food item!', error);
+        }
+    };
+
+    const totals = calculateTotals(mealEntries);
 
     return (
         <div className="meal-entries-list">
@@ -57,23 +92,29 @@ const MealEntriesList = ({ date, mealEntries, handleFetchMeals, setDate }) => {
             )}
 
             <div className="meal-entries">
-                {mealEntries.map((mealEntry) => (
-                    <div key={mealEntry.id} className="meal-entry">
-                        <h3>ОБРОК {mealEntry.id}</h3>
-                        <p>{mealEntry.mealDescription}</p>
-                        <p>{mealEntry.calories} калории</p>
-                        <p>{mealEntry.protein} грама протеини</p>
-                        <p>{mealEntry.fats} грама масти</p>
-                        <p>{mealEntry.carbohydrates} грама јаглехидрати</p>
-                        <div className="food-list">
-                            {mealEntry.foods.map((food) => (
-                                <div key={food.id} className="food-item">
-                                    {food.food_name}: {food.serving_qty} {food.serving_unit} - {food.nf_calories} calories
-                                </div>
-                            ))}
+                {mealEntries.map((mealEntry) => {
+                    const mealTotals = calculateMealEntryTotals(mealEntry.foods);
+                    return (
+                        <div key={mealEntry.id} className="meal-entry">
+                            <h3>ОБРОК {mealEntry.id}</h3>
+                            <p>{mealEntry.mealDescription}</p>
+                            <p>{mealTotals.totalCalories} калории</p>
+                            <p>{mealTotals.totalProtein} грама протеини</p>
+                            <p>{mealTotals.totalFats} грама масти</p>
+                            <p>{mealTotals.totalCarbs} грама јаглехидрати</p>
+                            <div className="food-list">
+                                {mealEntry.foods.map((food) => (
+                                    <div key={food.id} className="food-item">
+                                        {food.food_name}: {food.serving_qty} {food.serving_unit} - {food.nf_calories} kcal
+                                        <button className="delete-button" onClick={() => handleDeleteFood(mealEntry.id, food.id)}>
+                                            🗑️
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
         </div>
     );

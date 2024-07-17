@@ -5,27 +5,27 @@ import com.nutrition.data.MealEntry;
 import com.nutrition.service.MealService;
 import com.nutrition.service.NutritionService;
 import com.nutrition.service.OpenAIService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.util.List;
-
 
 @RestController
 @RequestMapping("/api/meals")
 public class MealController {
 
-    @Autowired
-    private MealService mealService;
+    private final MealService mealService;
 
-    @Autowired
-    private OpenAIService openAIService;
+    private final OpenAIService openAIService;
 
-    @Autowired
-    private NutritionService nutritionService;
+    private final NutritionService nutritionService;
+
+    public MealController(MealService mealService, OpenAIService openAIService, NutritionService nutritionService) {
+        this.mealService = mealService;
+        this.openAIService = openAIService;
+        this.nutritionService = nutritionService;
+    }
 
     @PostMapping
     public ResponseEntity<MealEntry> addMeal(@RequestBody MealEntry mealEntry) {
@@ -48,10 +48,15 @@ public class MealController {
         return ResponseEntity.ok(meals);
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<MealEntry>> getMealsByDate(@RequestParam LocalDate date) {
         List<MealEntry> meals = mealService.getMealsByDate(date);
         return ResponseEntity.ok(meals);
     }
 
+    @DeleteMapping("/{mealId}/foods/{foodId}")
+    public ResponseEntity<Void> deleteFoodFromMeal(@PathVariable Long mealId, @PathVariable Long foodId) {
+        mealService.removeFoodFromMeal(mealId, foodId);
+        return ResponseEntity.noContent().build();
+    }
 }
